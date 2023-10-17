@@ -1,0 +1,75 @@
+Resources:
+  MyLabVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: MyLab VPC
+
+  MyLabSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MyLabVPC
+      CidrBlock: 10.0.1.0/24
+      Tags:
+        - Key: Name
+          Value: MyLab Subnet
+
+  MyLabInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: MyLab Internet Gateway
+
+  MyLabVPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyLabVPC
+      InternetGatewayId: !Ref MyLabInternetGateway
+
+  MyLabRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyLabVPC
+      Tags:
+        - Key: Name
+          Value: MyLab Route Table
+
+  MyLabDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: MyLabVPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref MyLabRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref MyLabInternetGateway
+
+  MyLabSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: MyLabSec
+      GroupDescription: MyLab Security Group
+      VpcId: !Ref MyLabVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+MyLabSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MyLabSubnet
+      RouteTableId: !Ref MyLabRouteTable
