@@ -68,8 +68,8 @@ Resources:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
 
-MyLabSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref MyLabSubnet
-      RouteTableId: !Ref MyLabRouteTable
+  MyLabSubnetRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref MyLabSubnet
+        RouteTableId: !Ref MyLabRouteTable
